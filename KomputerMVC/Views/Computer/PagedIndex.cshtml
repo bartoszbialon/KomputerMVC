@@ -1,0 +1,120 @@
+﻿@model PagingList<Computer>
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Komputery</h1>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <form method="get" asp-controller="Computer" asp-action="PagedIndex">
+                <select id="filter" name="typeId" class="form-control" onchange="this.form.submit()">
+                </select>
+            </form>
+        </div>
+
+        <div class="col-md-8">
+            @if (Model.Data.Count() > 0)
+            {
+                @foreach (var item in Model.Data)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.ComputerName</h5>
+                            <p class="card-text"><strong>Procesor:</strong> @item.Processor</p>
+                            <p class="card-text"><strong>Pamięć RAM:</strong> @item.Memory</p>
+                            <p class="card-text"><strong>Karta graficzna:</strong> @item.GraphicsCard</p>
+                            <p class="card-text"><strong>Data produkcji:</strong> @item.ProductionDate.ToShortDateString()</p>
+                            <div class="text-center">
+                                <a href="@Url.Action("Update", "Computer", new { id = item.ComputerId })" class="btn btn-primary mr-2">Edytuj</a>
+                                <a href="@Url.Action("Details", "Computer", new { id = item.ComputerId })" class="btn btn-primary mr-2">Szczegóły</a>
+                                <a href="@Url.Action("Delete", "Computer", new { id = item.ComputerId })" class="btn btn-danger">Usuń</a> 
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Brak danych do wyświetlenia.</p>
+            }
+        </div>
+    </div>
+
+    <nav aria-label="Computers page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @if (Model.IsPrevious)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       asp-controller="Computer"
+                       asp-action="PagedIndex"
+                       asp-route-page="@(Model.Page - 1)"
+                       asp-route-size="@Model.Size">
+                        Wstecz
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Wstecz</span>
+                </li>
+            }
+            <li class="page-item disabled">
+                <span class="page-link">@Model.Page</span>
+            </li>
+            @if (Model.IsNext)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       asp-controller="Computer"
+                       asp-action="PagedIndex"
+                       asp-route-page="@(Model.Page + 1)"
+                       asp-route-size="@Model.Size">
+                        Dalej
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Dalej</span>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let select = document.getElementById("filter");
+            fetch(`/api/types`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    }
+                    throw "no ok, status " + response.status;
+                })
+                .then(json => {
+                    select.innerHTML = '';
+                    let all = document.createElement('option');
+                    all.setAttribute('value', 0);
+                    all.innerText = "Filtruj Typ";
+                    select.appendChild(all);
+                    for (let item of json) {
+                        let option = document.createElement('option');
+                        option.setAttribute('value', item.id);
+                        option.innerText = item.typeName;
+                        option.setAttribute('id', "option" + item.id);
+                        if (item.id == @ViewBag.typeId) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    }
+                })
+                .catch(e => {
+                    console.log('cant get data from api', e);
+                });
+        });
+    </script>
+}

@@ -1,0 +1,9 @@
+﻿@model Computer
+
+<h1>Czy na pewno chcesz usunąć komputer?</h1>
+
+<form asp-controller="Computer" asp-action="Delete">
+    <input asp-for="ComputerId" />
+    <button class="btn btn-danger" type="submit">Tak</button>
+    <a class="btn btn-outline-primary" asp-action="PagedIndex">Nie</a>
+</form>

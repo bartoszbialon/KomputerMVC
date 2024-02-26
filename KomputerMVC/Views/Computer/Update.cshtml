@@ -1,0 +1,72 @@
+﻿@model Computer
+
+<h1>Edytuj komputer</h1>
+<form asp-controller="Computer" asp-action="Update" method="post">
+
+    <div class="mb-3">
+        <label asp-for="ComputerName">Nazwa komputera</label>
+        <input class="form-control" asp-for="ComputerName" />
+        <span class="text-danger" asp-validation-for="ComputerName"></span>
+    
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Processor">Procesor</label>
+        <input class="form-control" asp-for="Processor" />
+        <span class="text-danger" asp-validation-for="Processor"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Memory">Pamięć</label>
+        <input class="form-control" asp-for="Memory" />
+        <span class="text-danger" asp-validation-for="Memory"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="GraphicsCard">Karta graficzna</label>
+        <input class="form-control" asp-for="GraphicsCard" />
+        <span class="text-danger" asp-validation-for="GraphicsCard"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ProductionDate">Data produkcji</label>
+        <input class="form-control" asp-for="ProductionDate" />
+        <span class="text-danger" asp-validation-for="ProductionDate"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TypeId">Typ</label>
+        <input class="form-control" asp-for="TypeId" />
+    </div>
+
+    <button class="btn btn-primary mr-2" type="submit">Edytuj</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const select = document.getElementById("TypeId");
+            fetch(`/api/types`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    }
+                    throw "no ok, status " + response.status;
+                })
+                .then(json => {
+                    select.innerHTML = '';
+                    for (let item of json) {
+                        let option = document.createElement('option');
+                        option.setAttribute('value', item.id);
+                        option.innerText = item.typeName;
+                        if (item.id == @Model.TypeId)
+                            option.selected = true;
+                        select.appendChild(option);
+                    }
+                })
+                .catch(e => {
+                    console.log('cant get data from api', e);
+                });
+        })
+    </script>
+}

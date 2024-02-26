@@ -1,0 +1,54 @@
+﻿@model Computer
+
+<div>
+    <table class="table table-hover">
+        <tr>
+            <th>Id</th>
+            <th>Nazwa komputera</th>
+            <th>Procesor</th>
+            <th>Pamięć</th>
+            <th>Karta graficzna</th>
+            <th>Data produkcji</th>
+        </tr>
+        <tr>
+            <td>@Model.ComputerId</td>
+            <td>@Model.ComputerName</td>
+            <td>@Model.Processor</td>
+            <td>@Model.Memory</td>
+            <td>@Model.GraphicsCard</td>
+            <td>@Model.ProductionDate.ToShortDateString()</td>
+        </tr>
+    </table>
+    <span>
+        <a class="btn btn-secondary" asp-controller="Computer" asp-action="PagedIndex">Cofnij</a>
+    </span>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const select = document.getElementById("TypeId");
+
+            try {
+                const response = await fetch(`/api/types`);
+
+                if (!response.ok) {
+                    throw "No OK, status " + response.status;
+                }
+
+                const json = await response.json();
+
+                select.innerHTML = '';
+
+                for (let item of json) {
+                    let option = document.createElement('option');
+                    option.setAttribute('value', item.id);
+                    option.innerText = item.typeName;
+                    select.appendChild(option);
+                }
+            } catch (e) {
+                console.log('Can\'t get data from API', e);
+            }
+        });
+    </script>
+}
